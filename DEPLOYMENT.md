@@ -1,17 +1,40 @@
-# 🚀 Deployment Guide: Render + Vercel
+# 🚀 Deployment Guide: Render + Vercel (Separate Directories)
 
 This guide walks you through deploying the Hadith Chatbot with the **backend on Render** and **frontend on Vercel** (completely FREE).
 
+The repository is organized into two separate directories:
+
+```
+production-hadith-chatbot/
+├── backend/                  ← Deploy to Render
+│   ├── app.py
+│   ├── config.py
+│   ├── requirements.txt
+│   ├── Procfile
+│   ├── data/
+│   ├── models/
+│   └── [other backend files]
+│
+├── frontend/                 ← Deploy to Vercel
+│   ├── index.html
+│   ├── static/
+│   ├── templates/
+│   ├── vercel.json
+│   └── [frontend assets]
+│
+└── README.md
+```
+
 ## 📋 Summary
 
-| Component | Platform | URL | Cost |
-|-----------|----------|-----|------|
-| **Backend (Flask API)** | Render | `https://hadith-api.onrender.com` | 🎉 Free |
-| **Frontend (HTML/CSS/JS)** | Vercel | `https://hadith.vercel.app` | 🎉 Free |
+| Component | Platform | Directory | URL | Cost |
+|-----------|----------|-----------|-----|------|
+| **Backend (Flask API)** | Render | `/backend` | `https://hadith-api.onrender.com` | 🎉 Free |
+| **Frontend (HTML/CSS/JS)** | Vercel | `/frontend` | `https://hadith.vercel.app` | 🎉 Free |
 
 ---
 
-## ✨ New Features Added
+## ✨ What's Been Set Up
 
 Your frontend now has a **backend health check** that:
 - ✅ Automatically detects when the backend is starting
@@ -21,24 +44,28 @@ Your frontend now has a **backend health check** that:
 
 ---
 
-## 🔧 Setup Instructions
+## 🔧 Deployment Steps
 
-### **Step 1: Prepare Your Repository**
+### **Step 1: Push to GitHub**
 
-The following files have been created/updated:
-- ✅ `Procfile` - Render configuration
-- ✅ `requirements.txt` - Added `flask-cors`
-- ✅ `app.py` - Added CORS headers
-- ✅ `static/js/script.js` - Added health check logic
-- ✅ `static/css/style.css` - Added loading message styles
-- ✅ `vercel.json` - Vercel configuration
-
-**Commit and push to GitHub:**
+The repository has been reorganized into `backend/` and `frontend/` directories.
 
 ```bash
 cd /home/arthas/Documents/GitHub/production-hadith-chatbot
+
+# Stage all changes
 git add -A
-git commit -m "Setup for Render + Vercel deployment with health check"
+
+# Commit
+git commit -m "Reorganize repo: separate backend and frontend directories
+
+- Moved app.py, config.py, requirements.txt to backend/
+- Moved templates/, static/, index.html to frontend/
+- Configure Render to deploy from /backend
+- Configure Vercel to deploy from /frontend
+- Added health check with loading indicator"
+
+# Push to GitHub
 git push origin main
 ```
 
@@ -46,27 +73,32 @@ git push origin main
 
 ### **Step 2: Deploy Backend to Render**
 
-#### **2a. Sign up on Render**
-1. Go to [render.com](https://render.com)
-2. Sign up with GitHub account (recommended)
-3. Connect your repository
+#### **2a. Create Web Service**
 
-#### **2b. Create Web Service**
-1. Click **"New +"** → **"Web Service"**
-2. Select your GitHub repo: `production-hadith-chatbot`
-3. Fill in the form:
+1. Go to [render.com](https://render.com)
+2. Click **"New +"** → **"Web Service"**
+3. Connect your GitHub repo: `production-hadith-chatbot`
+4. Fill in the form:
 
 | Field | Value |
 |-------|-------|
 | **Name** | `hadith-api` |
 | **Environment** | `Python 3` |
 | **Build Command** | `pip install -r requirements.txt` |
-| **Start Command** | `gunicorn app:app --timeout 120 --workers 1` |
+| **Start Command** | `gunicorn app:app --timeout 120` |
 | **Instance Type** | `Free` ✅ |
+
+#### **2b. Set Root Directory**
+
+Click **Settings** → **Root Directory**
+
+Set to: `backend`
+
+This tells Render to deploy only the `/backend` folder!
 
 #### **2c. Add Environment Variables**
 
-Click **Environment** tab and add:
+In the **Environment** section, add:
 
 ```
 GROQ_API_KEY=your_groq_api_key_here
@@ -81,9 +113,9 @@ FLASK_ENV=production
 
 #### **2d. Deploy**
 
-Click **"Create Web Service"** and wait ~5 minutes.
+Click **"Create Web Service"** → Wait 5 minutes
 
-**Your backend URL will be:** `https://hadith-api-xxxx.onrender.com`
+**Your backend URL:** `https://hadith-api-xxxx.onrender.com`
 
 ⚠️ **Save this URL** - you'll need it for the frontend!
 
@@ -91,11 +123,9 @@ Click **"Create Web Service"** and wait ~5 minutes.
 
 ### **Step 3: Deploy Frontend to Vercel**
 
-#### **3a. Update Backend URL in Frontend**
+#### **3a. Update Backend URL**
 
-Before deploying, update your frontend with the Render backend URL:
-
-Edit [static/js/script.js](static/js/script.js#L9-L11):
+Edit `frontend/static/js/script.js` and update line 9-11:
 
 ```javascript
 const API_BASE_URL = window.location.hostname === 'localhost' 
@@ -103,36 +133,35 @@ const API_BASE_URL = window.location.hostname === 'localhost'
     : 'https://hadith-api-xxxx.onrender.com'; // ← REPLACE WITH YOUR RENDER URL
 ```
 
-**Commit the change:**
+Then commit:
 ```bash
-git add static/js/script.js
+git add frontend/static/js/script.js
 git commit -m "Update API URL to Render backend"
 git push origin main
 ```
 
-#### **3b. Sign up on Vercel**
+#### **3b. Create Vercel Deployment**
+
 1. Go to [vercel.com](https://vercel.com)
-2. Sign up with GitHub
-3. Import your repo
+2. Click **"Add New"** → **"Project"**
+3. Import your GitHub repo
+4. In **Framework Preset**: Select `Other`
+5. In **Root Directory**: Set to `frontend`
+
+This tells Vercel to deploy only the `/frontend` folder!
 
 #### **3c. Deploy**
 
-**Option A: Auto-deploy (Recommended)**
-- Vercel will auto-deploy every time you push to GitHub ✅
+Click **"Deploy"** → Wait 1-2 minutes
 
-**Option B: Manual deploy**
-```bash
-npm install -g vercel
-vercel --prod
-```
-
-Your frontend will be at: `https://hadith.vercel.app` (or custom domain)
+Your frontend will be at: `https://hadith.vercel.app` (or your custom domain)
 
 ---
 
 ## 🧪 Testing
 
-### **Test Backend**
+### **Test Backend Health Check**
+
 ```bash
 curl https://hadith-api-xxxx.onrender.com/health
 ```
@@ -147,8 +176,9 @@ Expected response:
 ```
 
 ### **Test Frontend**
+
 1. Go to `https://hadith.vercel.app`
-2. You should see **"Backend is starting up..."** message initially
+2. You should see **"Backend is starting up..."** message initially (first load only)
 3. After 30-60 seconds, message disappears
 4. Try searching for a hadith
 
@@ -157,48 +187,44 @@ Expected response:
 ## 📊 How the Health Check Works
 
 ```
-Frontend loads → Checks /health endpoint every 3 seconds
-                    ↓
-    Backend not ready? → Show loading message, disable search
-                    ↓
-    Backend ready? → Hide message, enable search ✅
+Frontend loads
+    ↓
+Checks /health endpoint every 3 seconds
+    ↓
+Backend not ready? → Show loading message
+    ↓
+Backend ready? → Hide message, enable search ✅
 ```
-
-The message shows:
-- 🚀 **"Backend is starting up..."**
-- **"This may take 30-60 seconds on free tier. Please wait."**
-
-Then automatically disappears when ready!
 
 ---
 
 ## ⚡ Performance Tips
 
-### **Free Tier Limitations:**
+### **Free Tier Behavior:**
 - **First request:** 30-50 seconds (Render spins up)
 - **Subsequent requests:** ~2-5 seconds (fast)
-- **Auto-sleep:** After 15 minutes of inactivity, backend spins down
+- **Auto-sleep:** After 15 minutes of inactivity
 
 ### **User Experience:**
-- Frontend is instant (Vercel CDN)
+- Frontend loads instantly (Vercel CDN)
 - Health check prevents confusion
-- Clear messaging about loading time
+- Clear messaging about startup time
 
 ---
 
 ## 🔄 Updates & Redeployment
 
-Whenever you make changes:
+Whenever you make changes, just push to GitHub!
 
 ```bash
 # Backend code changes
-git add app.py config.py
+git add backend/
 git commit -m "Backend updates"
 git push origin main
 # Render auto-deploys!
 
 # Frontend code changes
-git add static/
+git add frontend/
 git commit -m "Frontend updates"
 git push origin main
 # Vercel auto-deploys!
@@ -208,47 +234,22 @@ git push origin main
 
 ## 🚨 Troubleshooting
 
-### **Backend not starting**
-```
-Error: Module not found
-```
-**Fix:** Make sure all dependencies are in `requirements.txt`
-```bash
-pip freeze > requirements.txt
-git push
-```
+### **Render says "No Procfile found"**
+✅ Make sure `backend/Procfile` exists (it should)
+
+### **Vercel not deploying**
+✅ Check that **Root Directory** is set to `frontend`
 
 ### **Frontend can't reach backend**
-Check the URL in `script.js`:
+Check the URL in `frontend/static/js/script.js`:
 ```javascript
-// Should be your actual Render URL
 const API_BASE_URL = 'https://hadith-api-xxxx.onrender.com';
 ```
 
-### **CORS errors in console**
-The app includes CORS headers, but verify in browser console:
-```javascript
-console.log('API URL:', API_BASE_URL);
-```
-
 ### **Health check stuck on loading**
-- Check backend logs on Render dashboard
+- Check backend logs on Render
 - Verify `GROQ_API_KEY` is set
 - Try restarting the service
-
----
-
-## 📱 Custom Domain (Optional)
-
-Both platforms support custom domains:
-
-**Render:**
-1. Go to **Settings** → **Custom Domain**
-2. Point your domain DNS
-
-**Vercel:**
-1. Go to **Settings** → **Domains**
-2. Add your domain
 
 ---
 
@@ -256,22 +257,23 @@ Both platforms support custom domains:
 
 | Service | Free Tier | Cost |
 |---------|-----------|------|
-| Render | Up to 750 hours/month | **$0** ✅ |
+| Render | 750 hours/month | **$0** ✅ |
 | Vercel | Unlimited | **$0** ✅ |
 | **Total** | | **$0** 🎉 |
-
-No credit card charged!
 
 ---
 
 ## ✅ Checklist
 
-- [ ] All files pushed to GitHub
-- [ ] Backend deployed on Render
-- [ ] `GROQ_API_KEY` set on Render
+- [ ] Reorganized repo into backend/ and frontend/
+- [ ] Pushed to GitHub
+- [ ] Created Render Web Service for backend
+- [ ] Set Root Directory to `backend` on Render
+- [ ] Added GROQ_API_KEY to Render
 - [ ] Got Render backend URL
-- [ ] Updated `script.js` with backend URL
-- [ ] Frontend deployed on Vercel
+- [ ] Updated API URL in frontend/static/js/script.js
+- [ ] Created Vercel deployment for frontend
+- [ ] Set Root Directory to `frontend` on Vercel
 - [ ] Tested health check
 - [ ] Tested search query
 
@@ -279,9 +281,9 @@ No credit card charged!
 
 ## 🎉 You're Done!
 
-Your chatbot is now **live and free** on the internet! 🚀
+Your chatbot is now **live and free**! 🚀
 
 - **Frontend:** `https://hadith.vercel.app`
-- **Backend API:** `https://hadith-api-xxxx.onrender.com`
+- **Backend:** `https://hadith-api-xxxx.onrender.com`
 
-Share your link with others! ✨
+Share your link! ✨

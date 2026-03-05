@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hadith Chatbot - Authentic Islamic Knowledge</title>
+    
+    <!-- Google Fonts - Islamic Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Lateef:wght@200;300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Islamic Header with Bismillah -->
+    <header class="header">
+        <div class="container">
+            <div class="bismillah-container">
+                <div class="bismillah" dir="rtl">بِسْمِ ٱللهِ ٱلرَّحْمٰنِ ٱلرَّحِيْمِ</div>
+                <div class="bismillah-translation">In the name of Allah, the Most Gracious, the Most Merciful</div>
+            </div>
+            
+            <div class="header-content">
+                <div class="logo-section">
+                    <i class="fas fa-book-quran logo-icon"></i>
+                    <h1 class="main-title">Hadith Chatbot</h1>
+                </div>
+                <p class="subtitle">Explore Authentic Hadith from Sahih Collections</p>
+                <div class="hadith-sources">
+                    <span class="source-badge">Sahih Bukhari</span>
+                    <span class="source-badge">Sahih Muslim</span>
+                    <span class="source-badge">Abu Daud</span>
+                    <span class="source-badge">Ibn Majah</span>
+                    <span class="source-badge">Al-Nasa'i</span>
+                    <span class="source-badge">At-Tirmidhi</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Search Section -->
+            <section class="search-section">
+                <div class="search-container">
+                    <div class="mode-toggle-container">
+                        <label class="mode-label">Response Mode:</label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-mode="concise">
+                                <i class="fas fa-list"></i>
+                                <span>Concise</span>
+                            </button>
+                            <button class="toggle-btn" data-mode="detailed">
+                                <i class="fas fa-align-left"></i>
+                                <span>Detailed</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="queryInput" 
+                            class="search-input" 
+                            placeholder="Ask about any Hadith topic... (e.g., 'What is said about fasting in Ramadan?')"
+                            autocomplete="off"
+                        >
+                        <button class="search-btn" id="searchBtn">
+                            <span class="btn-text">Search</span>
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="quick-searches">
+                        <span class="quick-label">Quick searches:</span>
+                        <button class="quick-btn" data-query="Prayer importance">Prayer</button>
+                        <button class="quick-btn" data-query="Fasting in Ramadan">Fasting</button>
+                        <button class="quick-btn" data-query="Charity and giving">Charity</button>
+                        <button class="quick-btn" data-query="Good character and manners">Character</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Animation -->
+            <div class="loading-container" id="loadingContainer">
+                <div class="loading-spinner">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                </div>
+                <p class="loading-text">Searching authentic Hadiths...</p>
+            </div>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection">
+                <!-- Response Card -->
+                <div class="response-card" id="responseCard">
+                    <div class="card-header">
+                        <i class="fas fa-comment-dots"></i>
+                        <h2>Response</h2>
+                        <span class="mode-indicator" id="modeIndicator"></span>
+                    </div>
+                    <div class="card-body" id="responseBody">
+                        <!-- Response content will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Hadiths Details (Collapsible) -->
+                <div class="hadiths-container" id="hadithsContainer">
+                    <div class="hadiths-header" id="hadithsHeader">
+                        <div class="header-left">
+                            <i class="fas fa-scroll"></i>
+                            <h3>Source Hadiths</h3>
+                            <span class="hadith-count" id="hadithCount">0 Hadiths</span>
+                        </div>
+                        <button class="collapse-btn" id="collapseBtn">
+                            <span>Show Details</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="hadiths-content" id="hadithsContent">
+                        <!-- Hadith cards will be inserted here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About</h4>
+                    <p>This application provides access to authentic Hadiths from the six canonical collections, powered by advanced AI technology.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Data Source</h4>
+                    <p>Leeds University & King Saud University Hadith Corpus</p>
+                    <p class="small-text">39,038 authenticated Hadiths</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Disclaimer</h4>
+                    <p>Always consult qualified Islamic scholars for religious guidance.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Hadith Chatbot. Built with respect and dedication.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
